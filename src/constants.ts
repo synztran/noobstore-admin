@@ -1,6 +1,7 @@
 import React from "react";
 import {
 	EnumCategoryType,
+	EnumProductOptStatus,
 	EnumProductType,
 	EnumSaleStatus,
 	EnumUploadStatus,
@@ -245,3 +246,20 @@ export const productPartOptions = [
 		value: EnumProductType.ETC,
 	},
 ];
+
+export const ProductOptStatus: Record<
+	EnumProductOptStatus,
+	{
+		label: string;
+		value: EnumProductOptStatus;
+	}
+> = {
+	[EnumProductOptStatus.INSTOCK]: {
+		label: "Còn hàng",
+		value: EnumProductOptStatus.INSTOCK,
+	},
+	[EnumProductOptStatus.OUTSTOCK]: {
+		label: "Hết hàng",
+		value: EnumProductOptStatus.OUTSTOCK,
+	},
+};

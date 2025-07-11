@@ -179,7 +179,7 @@ export interface IAuthUser {
 	paypal: string;
 	phoneAreaCode: string;
 	phoneNumber: string;
-	shippingAt: any[]; // Assuming shippingAt is an array of any type
+	shippingAt: unknown; // Assuming shippingAt is an array of any type
 	verified: boolean;
 	verifiedAt: string; // Assuming this is also a string
 	role?: string; // "admin" | "user"
@@ -262,6 +262,21 @@ export interface IOptionGroup {
 	isRequired: boolean;
 	isMultiple: boolean;
 	optionIds: string[];
+}
+
+export interface IProductOption {
+	id?: string; // Assuming PyObjectId is a string representation
+	name?: string;
+	price?: number;
+	salePrice?: number;
+	description?: string;
+	status?: EnumProductOptStatus; // Assuming ENUM_STATUS maps to EnumProductOptStatus
+	quantity?: number;
+	thumbnail?: string;
+	isActive?: boolean;
+	createdAt?: Date;
+	updatedAt?: Date | null;
+	productPart?: EnumProductType;
 }
 
 export interface IProductOption {

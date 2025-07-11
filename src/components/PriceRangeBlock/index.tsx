@@ -11,26 +11,30 @@ interface IProps {
 const PriceRangeBlock = ({ min, max, sale, handle, tax }: IProps) => {
 	return (
 		<div className="flex flex-col gap-2">
-			<div className="flex flex-col">
-				<span className="font-bold">Min - Max:</span>{" "}
-				{formatCurrency(min)} - {formatCurrency(max)}
-			</div>
+				<div className="flex items-center gap-2">
+					<span>Min:</span>{" "}
+					<span className="font-bold">{formatCurrency(min)}</span>
+				</div>
+				<div className="flex items-center gap-2">
+					<span>Max:</span>{" "}
+					<span className="font-bold">{formatCurrency(max)}</span>
+				</div>
 			{sale ? (
 				<div className="flex">
-					<span className="font-bold">Sale:</span>&nbsp;
-					{formatCurrency(sale)}
+					<span>Sale:</span>&nbsp;
+					<span className="font-bold">{formatCurrency(sale)}</span>
 				</div>
 			) : null}
 			{handle ? (
 				<div className="flex">
-					<span className="font-bold">Handle:</span>&nbsp;
-					{handle}%
+					<span>Handle:</span>&nbsp;
+					<span className="font-bold">{handle}%</span>
 				</div>
 			) : null}
 			{tax ? (
 				<div className="flex">
-					<span className="font-bold">Tax:</span>&nbsp;
-					{tax}%
+					<span>Tax:</span>&nbsp;
+					<span className="font-bold">{tax}%</span>
 				</div>
 			) : null}
 		</div>

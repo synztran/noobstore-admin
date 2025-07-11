@@ -6,13 +6,14 @@ import React, { useEffect, useState } from "react";
 import MultipleSelectionList, { type TOptions } from "../MultipleSelectList";
 import CategorySelection from "../CategorySelect";
 import SelectionList from "../SelectionList";
-import type { IProductOption } from "@/interfaces";
+import type { IProduct, IProductOption } from "@/interfaces";
 import ProductsClient from "@/client/ProductsClient";
 import toast from "react-hot-toast";
 import ProductSelection from "../ProductSelect";
+import type { FormikContextType } from "formik";
 
 interface IProps {
-	formik: any;
+	formik: FormikContextType<IProduct>;
 	open: boolean;
 	onClose: () => void;
 	isEdit?: boolean;
@@ -20,6 +21,7 @@ interface IProps {
 
 const NewProduct: React.FC<IProps> = (props) => {
 	const { formik, open, onClose, isEdit = false } = props;
+  console.log("formik", formik, formik.values)
 	const [productOptions, setProductOptions] = useState<IProductOption[]>([]);
 	const [isLoading, setLoading] = useState(false);
 
@@ -28,7 +30,7 @@ const NewProduct: React.FC<IProps> = (props) => {
 		(async () => {
 			const res = await ProductsClient.getProductOptions({
 				body: {
-					productId: formik.values.productId,
+					productId: formik.values.productId || "",
 					productPart: formik.values.productPart,
 					productOptionIds: [],
 				},
@@ -41,7 +43,7 @@ const NewProduct: React.FC<IProps> = (props) => {
 			}
 			setLoading(false);
 		})();
-	}, [formik.values.productPart]);
+	}, [formik.values.productPart, formik.values.productId]);
 
 	const handleOnChange = (name: string, value: string) => {
 		formik.setFieldValue(name, value);
@@ -76,7 +78,7 @@ const NewProduct: React.FC<IProps> = (props) => {
 						<ProductSelection
 							categoryId={formik.values.categoryId}
 							name="productId"
-							value={formik.values.productId}
+							value={formik.values.productId || ""}
 							onChange={handleOnChange}
 							placeholder="Chọn sản phẩm"
 							className="mt-4"
@@ -126,7 +128,7 @@ const NewProduct: React.FC<IProps> = (props) => {
 							setFieldValue={formik.setFieldValue}
 							values={formik.values.optionGroups?.optionIds || []}
 							options={
-								(productOptions?.map((option: any) => ({
+								(productOptions?.map((option: IProductOption) => ({
 									id: option.id,
 									name: option.name,
 									salePrice: option.salePrice,
@@ -285,7 +287,7 @@ const NewProduct: React.FC<IProps> = (props) => {
 						<TextEditor
 							label="Nội dung chi tiết"
 							value={formik.values.description ?? ""}
-							onChange={(value: any) =>
+							  onChange={(value: string) =>
 								formik.setFieldValue("description", value)
 							}
 							placeholder="Nội dung chi tiết"

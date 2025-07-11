@@ -5,7 +5,7 @@ import { NEW_MISSING_IMAGE } from "@/images";
 import type { IResponse } from "@/interfaces";
 import { EnumUploadStatus } from "@/interfaces";
 import { X } from "lucide-react";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
 interface IUploadImageProps {
@@ -44,20 +44,29 @@ const UploadImage: React.FC<IUploadImageProps> = ({
 	thumbnailUploaded,
 }) => {
 	const fileInputRef = React.useRef<HTMLInputElement>(null);
-	const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>(
-		() => {
-			if (thumbnailUploaded) {
-				return [
-					{
-						preview: thumbnailUploaded?.[0] || "",
-						status: EnumUploadStatus.DONE,
-						publicUrl: thumbnailUploaded?.[0] || "",
-					},
-				];
-			}
-			return files;
+	const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
+
+	// Reset state when props change (e.g., when modal opens with different product)
+	useEffect(() => {
+		const newImages: UploadedImage[] = [];
+
+		if (thumbnailUploaded && thumbnailUploaded.length > 0) {
+			newImages.push({
+				preview: thumbnailUploaded[0] || "",
+				status: EnumUploadStatus.DONE,
+				publicUrl: thumbnailUploaded[0] || "",
+			});
+		} else if (files && files.length > 0) {
+			newImages.push(...files);
 		}
-	);
+
+		setUploadedImages(newImages);
+
+		// Reset file input
+		if (fileInputRef.current) {
+			fileInputRef.current.value = "";
+		}
+	}, [thumbnailUploaded]);
 
 	const handleImageUpload = async (
 		event: React.ChangeEvent<HTMLInputElement>
@@ -143,9 +152,12 @@ const UploadImage: React.FC<IUploadImageProps> = ({
 				size: (resultData as IImageData)?.bytes || 0,
 			};
 
-			handleSyncData && handleSyncData(listImages);
+			if (handleSyncData) {
+				handleSyncData(listImages);
+			}
 			toast.success("Tải ảnh lên thành công");
 		} catch (error) {
+			console.error("Upload error:", error);
 			toast.error("Có lỗi xảy ra. Không thể tải lên ảnh");
 			setUploadedImages((prev) =>
 				prev.map((img) => ({
@@ -165,13 +177,13 @@ const UploadImage: React.FC<IUploadImageProps> = ({
 
 	return (
 		<div className="flex flex-col mt-2 border p-4 relative min-w-[15vw] w-full h-full rounded-[4px] justify-center">
-			{/* <div className="text-base text-gray-500">{label}</div> */}
 			<label className="absolute -top-3 left-2 bg-white px-2 text-xs text-[rgba(0,0,0,0.6)]">
 				{label}
 			</label>
 			<button
 				className="btn btn-md max-w-max text-white bg-red-400 rounded-lg p-4 cursor-pointer text-center"
-				onClick={() => fileInputRef.current?.click()}>
+				onClick={() => fileInputRef.current?.click()}
+				type="button">
 				Tải lên ảnh
 			</button>
 			{acceptedFileTypes?.length ? (

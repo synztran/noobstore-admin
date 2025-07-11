@@ -12,6 +12,7 @@ import Dashboard from "./pages/Dashboard";
 import Products from "./pages/Products";
 import { Toaster } from "react-hot-toast";
 import Categories from "./pages/Categories";
+import ProductOptionsPage from "./pages/ProductOptions";
 
 function App() {
 	return (
@@ -52,6 +53,17 @@ function App() {
 									<ProtectedRoute>
 										<Layout>
 											<Categories />
+										</Layout>
+									</ProtectedRoute>
+								}
+							/>
+
+							<Route
+								path="/product-options"
+								element={
+									<ProtectedRoute>
+										<Layout>
+											<ProductOptionsPage />
 										</Layout>
 									</ProtectedRoute>
 								}

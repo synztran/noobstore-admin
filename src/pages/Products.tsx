@@ -2,6 +2,7 @@ import { getData, isValid } from "@/client";
 import ProductsClient from "@/client/ProductsClient";
 import NewProduct from "@/components/Product/Form";
 import { HTTP_STATUS } from "@/constants";
+import { NEW_MISSING_IMAGE } from "@/images";
 import {
 	EnumProductType,
 	EnumSaleStatus,
@@ -10,7 +11,7 @@ import {
 } from "@/interfaces";
 import { productValidationSchema } from "@/validates/categories";
 import { useFormik } from "formik";
-import { Ban, Check, Edit, Trash } from "lucide-react";
+import { Ban, Check, Edit } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -19,6 +20,10 @@ const tableColumns: {
 	label: string;
 	styles?: React.CSSProperties;
 }[] = [
+  {
+    id: "thumbnail",
+    label: "Ảnh",
+  },
 	{
 		id: "categoryId",
 		label: "#",
@@ -57,6 +62,7 @@ const Products: React.FC = () => {
 			setLoading(true);
 			const signal = new AbortController().signal;
 			const response = await ProductsClient.getAllProducts({ signal });
+			console.log("response", response)
 			if (!isValid(response)) {
 				toast.error("Có lỗi xảy ra trong quá trình lấy dữ liệu");
 				return;
@@ -80,6 +86,8 @@ const Products: React.FC = () => {
 		})();
 	}, []);
 
+  console.log("targetProduct", targetProduct)
+
 	const formik = useFormik({
 		initialValues: {
 			productId: targetProduct?.productId ?? "",
@@ -90,10 +98,7 @@ const Products: React.FC = () => {
 			isActive: targetProduct?.isActive ?? false,
 			price: targetProduct?.price ?? 0,
 			salePrice: targetProduct?.salePrice ?? 0,
-			thumbnail: {
-				path: targetProduct?.thumbnail?.path ?? "",
-				size: targetProduct?.thumbnail?.size ?? 0,
-			},
+			thumbnail: targetProduct?.thumbnail ?? null,
 			images: targetProduct?.images ?? [],
 			description: targetProduct?.description ?? "",
 			productType: targetProduct?.productPart ?? "",
@@ -143,7 +148,6 @@ const Products: React.FC = () => {
 			if (targetProduct) {
 				setTargetProduct(null);
 			}
-			// await refetch();
 		} else {
 			toast.error("Có lỗi xảy ra trong quá trình tạo mới");
 		}
@@ -161,18 +165,9 @@ const Products: React.FC = () => {
 			formik.resetForm();
 			setOpen(false);
 			setTargetProduct(null);
-			// await refetch();
 		} else {
 			toast.error("Có lỗi xảy ra trong quá trình cập nhật");
 		}
-	};
-
-	const handleDeleteProduct = (productId: string) => {
-		// deleteProductMutation.mutate({
-		// 	payload: {
-		// 		productId: productId,
-		// 	},
-		// });
 	};
 
 	const handleEditProduct = (product: IProduct) => {
@@ -215,6 +210,16 @@ const Products: React.FC = () => {
 								) : null}
 								{products.map((product) => (
 									<tr key={product.productId}>
+                    <td>
+                      <div className="flex flex-col gap-2">
+                        <img
+                          src={product.thumbnail?.path || NEW_MISSING_IMAGE}
+                          alt={product.productName}
+                          width={100}
+                          height={100}
+                        />
+                      </div>
+                    </td>
 										<td>
 											<div className="flex flex-col gap-2">
 												<div>
@@ -223,17 +228,15 @@ const Products: React.FC = () => {
 													</span>{" "}
 													{product.productId}
 												</div>
-												{product?.optionGroups
-													?.groupName ? (
+												{product?.productPart
+													 ? (
 													<div>
 														<span className="font-bold">
 															Product part:
 														</span>{" "}
 														<span className="rounded-md bg-gray-600 text-white p-1">
 															{
-																product
-																	.optionGroups
-																	.groupName
+																product.productPart
 															}
 														</span>
 													</div>
@@ -318,12 +321,15 @@ const Products: React.FC = () => {
 										</td>
 										<td>
 											<div className="flex flex-col gap-2">
-												<button className="btn max-w-max max-h-max !p-0.5 btn-outline">
+												<button
+													className="btn max-w-max max-h-max !p-0.5 btn-outline"
+													onClick={() =>
+														handleEditProduct(
+															product
+														)
+													}>
 													<Edit />
 												</button>
-												{/* <button className="btn max-w-max max-h-max !p-0.5 btn-error">
-													<Trash />
-												</button> */}
 											</div>
 										</td>
 									</tr>

@@ -6,37 +6,28 @@ import CollapseContentEditor from "../CollapseContentEditor";
 import CategoryTypeSelector from "../CategoryTypeSelector";
 import TextEditor from "@/components/Texteditor";
 import UploadImage from "@/components/InputComponents/UploadImage";
+import type { FormikContextType } from "formik";
 
 interface IProps {
 	open: boolean;
 	onClose: () => void;
 	onSubmit: (values: ICategory) => void;
 	targetEdit: ICategory | null;
-	formik: any;
+	formik: FormikContextType<ICategory>;
 }
 
 const CategoryForm = ({
 	open,
 	onClose,
-	onSubmit,
+	// onSubmit,
 	targetEdit,
 	formik,
 }: IProps) => {
 	const syncImageToFormik = (file: { publicUrl: string; size: number }) => {
-		formik.setFieldValue("thumbnail", [
-			...(formik.values.thumbnail || []),
-			{
-				path: file.publicUrl,
-				size: file.size,
-			},
-		]);
-		formik.setFieldValue(
-			"thumbnail",
-			formik.values.thumbnail?.[0] || {
-				path: "",
-				size: 0,
-			}
-		);
+		formik.setFieldValue("thumbnail", {
+			path: file.publicUrl,
+			size: file.size,
+		});
 	};
 
 	return (

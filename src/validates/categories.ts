@@ -11,10 +11,13 @@ export const categoryValidationSchema = yup.object({
 		.min(0, "Minimum price must be greater than or equal to 0"),
 	maxPrice: yup
 		.number()
-		.required("Maximum price is required")
-		.min(
-			yup.ref("minPrice"),
-			"Maximum price must be greater than or equal to minimum price"
+		.test(
+			"is-greater-than-min",
+			"Maximum price must be greater than minimum price",
+			function (value) {
+				if (value === 0) return true;
+				return value === undefined || value > this.parent.minPrice;
+			}
 		),
 });
 

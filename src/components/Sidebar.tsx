@@ -37,6 +37,12 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen }) => {
 			icon: "📦",
 			path: "/products",
 		},
+    {
+			id: "product-options",
+			label: "Product Options",
+			icon: "📦",
+			path: "/product-options",
+		},
 		{
 			id: "orders",
 			label: "Orders",
