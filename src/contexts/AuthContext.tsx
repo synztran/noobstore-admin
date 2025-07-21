@@ -79,10 +79,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 			const respUser = await UserClient.getCurrentUser();
 			console.log(respUser);
 			if (respUser?.status === "OK") {
-				const userInfo: IAuthUser | null = getFirst(
-					respUser,
-					null
-				) as IAuthUser | null;
+				const userInfo: IAuthUser | null =
+					respUser.data as IAuthUser | null;
 				const cookiesValue = Cookies.get(ACCESS_TOKEN);
 				if (cookiesValue && cookiesValue.length > 0) {
 					setCookies({ bearerToken: cookiesValue });

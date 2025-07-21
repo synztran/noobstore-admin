@@ -23,10 +23,13 @@ const tableColumns: {
 	label: string;
 	styles?: React.CSSProperties;
 }[] = [
-  {
-    id: "thumbnail",
-    label: "Ảnh",
-  },
+	{
+		id: "thumbnail",
+		label: "Ảnh",
+		styles: {
+			width: "10%",
+		},
+	},
 	{
 		id: "categoryId",
 		label: "#",
@@ -46,9 +49,9 @@ const tableColumns: {
 	{
 		id: "price",
 		label: "Giá - Tồn",
-    styles: {
-      width: 200,
-    }
+		styles: {
+			width: 200,
+		},
 	},
 	{
 		id: "actions",
@@ -61,7 +64,7 @@ const Categories: React.FC = () => {
 	const [targetEdit, setTargetEdit] = useState<ICategory | null>(null);
 	const [categories, setCategories] = useState<ICategory[]>([]);
 	const [fetching, setFetching] = useState<boolean>(false);
-  const [triggerRefetch, setTriggerRefetch] = useState<boolean>(false);
+	const [triggerRefetch, setTriggerRefetch] = useState<boolean>(false);
 
 	const formik = useFormik({
 		initialValues: {
@@ -103,8 +106,8 @@ const Categories: React.FC = () => {
 			toast.success("Tạo mới thành công");
 			formik.resetForm();
 			setOpen(false);
-      setTriggerRefetch(true)
-      setTargetEdit(null)
+			setTriggerRefetch(true);
+			setTargetEdit(null);
 		} else {
 			toast.error("Tạo mới thất bại");
 		}
@@ -120,9 +123,9 @@ const Categories: React.FC = () => {
 		if (response.status === HTTP_STATUS.Ok) {
 			toast.success("Cập nhật thành công");
 			formik.resetForm();
-      setTargetEdit(null)
+			setTargetEdit(null);
 			setOpen(false);
-      setTriggerRefetch(true)
+			setTriggerRefetch(true);
 		} else {
 			toast.error("Cập nhật thất bại");
 		}
@@ -140,29 +143,29 @@ const Categories: React.FC = () => {
 	};
 
 	useEffect(() => {
-    (async () => {
-      setFetching(true);
-      const signal = AbortSignal.timeout(10000);
-      const params = {
-        status: EnumSaleStatus.ALL,
-        isValid: false,
-      };
-      const response: IResponse<ICategory> =
-        await CategoryClient.getAllCategory({
-          params,
-          signal,
-        });
-      if (!isValid(response)) {
-        toast.error(response.message);
-        setCategories([]);
-      }
-      setCategories(getData(response) || []);
-      setFetching(false);
-    })();
+		(async () => {
+			setFetching(true);
+			const signal = AbortSignal.timeout(10000);
+			const params = {
+				status: EnumSaleStatus.ALL,
+				isValid: false,
+			};
+			const response: IResponse<ICategory> =
+				await CategoryClient.getAllCategory({
+					params,
+					signal,
+				});
+			if (!isValid(response)) {
+				toast.error(response.message);
+				setCategories([]);
+			}
+			setCategories(getData(response) || []);
+			setFetching(false);
+		})();
 
-    return () => {
-      setTriggerRefetch(false)
-    }
+		return () => {
+			setTriggerRefetch(false);
+		};
 	}, [triggerRefetch]);
 
 	return (
@@ -188,7 +191,11 @@ const Categories: React.FC = () => {
 							<thead>
 								<tr>
 									{tableColumns.map((column) => (
-										<th key={column.id} style={column?.styles}>{column.label}</th>
+										<th
+											key={column.id}
+											style={column?.styles}>
+											{column.label}
+										</th>
 									))}
 								</tr>
 							</thead>
@@ -200,16 +207,20 @@ const Categories: React.FC = () => {
 								) : null}
 								{categories.map((category) => (
 									<tr key={category.categoryId}>
-                    <td>
-                      <div className="flex flex-col gap-2">
-                        <img
-                          src={category.thumbnail?.path || NEW_MISSING_IMAGE}
-                          alt={category.categoryName}
-                          width={100}
-                          height={100}
-                        />
-                      </div>
-                    </td>
+										<td>
+											<div className="flex flex-col gap-2">
+												<img
+													src={
+														category.thumbnail
+															?.path ||
+														NEW_MISSING_IMAGE
+													}
+													alt={category.categoryName}
+													width={120}
+													height={120}
+												/>
+											</div>
+										</td>
 										<td>
 											<div className="flex flex-col gap-2">
 												<div>
@@ -249,7 +260,9 @@ const Categories: React.FC = () => {
 												</Link>
 											</div>
 										</td>
-										<td className="line-clamp-3 table-cell">{category.description}</td>
+										<td className="line-clamp-3 table-cell">
+											{category.description}
+										</td>
 										<td className="flex flex-col gap-2 items-center">
 											<input
 												type="checkbox"
@@ -262,13 +275,23 @@ const Categories: React.FC = () => {
 													)
 												}
 											/>
-											<span
+											{/* <span
 												className={`badge badge-primary`}>
 												{
 													MapCategoryStatus[
 														category.status as EnumSaleStatus
 													]?.label
 												}
+											</span> */}
+											<span
+												className={`badge ${
+													category.isValidSetup
+														? "badge-success"
+														: "badge-error"
+												}`}>
+												{category.isValidSetup
+													? "Hợp lệ"
+													: "Chưa hợp lệ"}
 											</span>
 										</td>
 										<td>

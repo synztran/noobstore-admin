@@ -33,6 +33,11 @@ interface IImageData {
 	url: string;
 }
 
+type TransformationOptions =
+	| "isOverlayLogo"
+	| "isOptimize"
+	| "isRemoveBackground";
+
 const UploadImage: React.FC<IUploadImageProps> = ({
 	allowMultiple = false,
 	acceptedFileTypes = [],
@@ -45,6 +50,9 @@ const UploadImage: React.FC<IUploadImageProps> = ({
 }) => {
 	const fileInputRef = React.useRef<HTMLInputElement>(null);
 	const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
+	const [transformationOptions, setTransformationOptions] = useState<
+		TransformationOptions[]
+	>([]);
 
 	// Reset state when props change (e.g., when modal opens with different product)
 	useEffect(() => {
@@ -101,6 +109,24 @@ const UploadImage: React.FC<IUploadImageProps> = ({
 			).map(async (file) => {
 				const formData = new FormData();
 				formData.append("files", file);
+				formData.append(
+					"is_remove_background",
+					transformationOptions.includes("isRemoveBackground")
+						? "true"
+						: "false"
+				);
+				formData.append(
+					"is_overlay_logo",
+					transformationOptions.includes("isOverlayLogo")
+						? "true"
+						: "false"
+				);
+				formData.append(
+					"is_optimize",
+					transformationOptions.includes("isOptimize")
+						? "true"
+						: "false"
+				);
 				const response = await postUploadImage(formData);
 
 				if (response.status !== "OK") {
@@ -208,6 +234,45 @@ const UploadImage: React.FC<IUploadImageProps> = ({
 				style={{ display: "none" }}
 				ref={fileInputRef}
 			/>
+			<div className="border rounded-md p-4 mt-4 relative">
+				<label className="block mb-2 font-semibold text-sm text-gray-700 absolute -top-3 left-2 bg-white px-2">
+					Tối ưu ảnh
+				</label>
+				<div className="flex gap-4">
+					{["isOverlayLogo", "isOptimize", "isRemoveBackground"].map(
+						(option) => (
+							<label
+								key={option}
+								className="flex items-center gap-2 cursor-pointer">
+								<input
+									type="checkbox"
+									className="toggle toggle-primary"
+									checked={transformationOptions.includes(
+										option as any
+									)}
+									onChange={() => {
+										setTransformationOptions((prev) => {
+											if (prev.includes(option as any)) {
+												return prev.filter(
+													(item) => item !== option
+												);
+											} else {
+												return [...prev, option as any];
+											}
+										});
+									}}
+								/>
+								<span>
+									{option === "isOverlayLogo" && "Thêm logo"}
+									{option === "isOptimize" && "Tối ưu ảnh"}
+									{option === "isRemoveBackground" &&
+										"Xóa nền"}
+								</span>
+							</label>
+						)
+					)}
+				</div>
+			</div>
 			{uploadedImages?.length ? (
 				<BlockImageUploaded
 					uploadedImages={uploadedImages}
@@ -239,7 +304,10 @@ const BlockImageUploaded = ({
 				{uploadedImages.map((image, index) => (
 					<div key={index} className="flex flex-col justify-between">
 						<div className="relative max-w-max">
-							{image.status === EnumUploadStatus.DONE && (
+							{[
+								EnumUploadStatus.DONE,
+								EnumUploadStatus.ERROR,
+							].includes(image.status) && (
 								<X
 									className="absolute -top-2 -right-2 cursor-pointer z-10 text-black bg-white rounded-full p-1 border border-gray-600 hover:scale-110 transform transition-transform duration-200"
 									onClick={() => handleRemoveImage?.(index)}
@@ -251,7 +319,7 @@ const BlockImageUploaded = ({
 									alt={`Uploaded ${index}`}
 									width={120}
 									height={120}
-									className="rounded-lg cursor-pointer"
+									className="rounded-lg cursor-pointer bg-red-400"
 									style={{
 										maxWidth: "100%",
 										height: "auto",

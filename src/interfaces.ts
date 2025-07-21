@@ -223,6 +223,8 @@ export interface ICategory {
 	collapseContent?: ICollapseContent[];
 	salePrice?: number;
 	content: string;
+	// not save into db
+	isValidSetup?: boolean;
 }
 
 export interface ICollapseContent {
