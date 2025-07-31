@@ -1,12 +1,12 @@
 import ProductsClient from "@/client/ProductsClient";
 import { HTTP_STATUS } from "@/constants";
-import type { IProduct } from "@/interfaces";
+import type { EnumProductType, IProduct } from "@/interfaces";
+import { X } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import toast from "react-hot-toast";
 
-interface IProps {
-	// options?: { value: string; label: string }[];
-	categoryId: string;
+interface SelectProps {
+	options?: { value: string; label: string; disabled?: boolean }[];
 	name: string;
 	value: string;
 	onChange: (name: string, value: string) => void;
@@ -16,9 +16,8 @@ interface IProps {
 	label?: string;
 }
 
-const ProductSelection: React.FC<IProps> = ({
-	// options,
-	categoryId,
+const ProductSelector: React.FC<SelectProps> = ({
+	options,
 	value,
 	onChange,
 	placeholder,
@@ -35,44 +34,42 @@ const ProductSelection: React.FC<IProps> = ({
 			value: string;
 			label: string;
 			disabled?: boolean;
+			productPart: EnumProductType;
 		}[]
 	>([]);
 	const dropdownRef = useRef<HTMLDivElement>(null);
 
 	const fetchProducts = async () => {
 		setLoading(true);
-		const resp = await ProductsClient.getAllProductsByCategory({
-			params: {
-				categoryId,
-			},
+		const resp = await ProductsClient.getAllProducts({
 			signal: new AbortController().signal,
 		});
 		if (resp.status !== HTTP_STATUS.Ok) {
 			setLoading(false);
 			setProducts([]);
-			toast.error("Lỗi khi lấy danh sách sản phẩm");
+			toast.error("Lỗi khi lấy danh sách danh mục");
 			return;
 		}
-		const filters = resp?.data?.map((item: IProduct) => ({
+		const filterOptions = resp?.data?.map((item: IProduct) => ({
 			value: item.productId,
-			label: item.productId + " - " + item.productName,
+			label: item.productName + " - " + item.categoryName,
 			disabled: !item.isActive,
+			productPart: item.productPart,
 		})) as {
 			value: string;
 			label: string;
 			disabled?: boolean;
+			productPart: EnumProductType;
 		}[];
-		setProducts(filters || []);
+		setProducts(filterOptions || []);
 		setLoading(false);
 	};
 
 	const handleOpen = async () => {
 		setOpen(true);
-		await fetchProducts();
-	};
-
-	const handleClose = () => {
-		setOpen(false);
+		if (products.length === 0) {
+			await fetchProducts();
+		}
 	};
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -82,17 +79,19 @@ const ProductSelection: React.FC<IProps> = ({
 	const handleSelectOption = (option: {
 		value: string;
 		label: string;
+		productPart: EnumProductType;
 		disabled?: boolean;
 	}) => {
 		if (option.disabled) return;
 		onChange(name, option.value);
+		onChange("productPart", option.productPart);
 		setInputValue("");
 		setOpen(false);
 	};
 
 	const filteredOptions = useMemo(() => {
-		return products.filter((option) =>
-			option.label.toLowerCase().includes(inputValue.toLowerCase())
+		return products.filter((product) =>
+			product.label.toLowerCase().includes(inputValue.toLowerCase())
 		);
 	}, [products, inputValue]);
 
@@ -106,7 +105,7 @@ const ProductSelection: React.FC<IProps> = ({
 				await fetchProducts();
 			})();
 		}
-	}, [isUpdate, categoryId]);
+	}, [isUpdate]);
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -134,15 +133,33 @@ const ProductSelection: React.FC<IProps> = ({
 				</label>
 			)}
 			<div className="relative">
-				<input
-					type="text"
-					placeholder={placeholder || "Chọn sản phẩm"}
-					className="input input-bordered w-full"
-					value={selectedOption ? selectedOption.label : inputValue}
-					onChange={handleInputChange}
-					onFocus={handleOpen}
-					readOnly={!!selectedOption}
-				/>
+				<div className="flex items-center relative">
+					<input
+						type="text"
+						placeholder={placeholder || "Tìm kiếm và chọn danh mục"}
+						className="input input-bordered w-full pr-10"
+						value={
+							selectedOption ? selectedOption.label : inputValue
+						}
+						onChange={handleInputChange}
+						onFocus={handleOpen}
+						readOnly={!!selectedOption}
+					/>
+					{selectedOption && (
+						<button
+							type="button"
+							className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 cursor-pointer z-10"
+							onClick={() => {
+								onChange(name, "");
+								setInputValue("");
+								setOpen(false);
+							}}
+							tabIndex={-1}
+							aria-label="Clear selection">
+							<X className="w-6 h-6" />
+						</button>
+					)}
+				</div>
 				{loading && (
 					<div className="absolute right-3 top-1/2 transform -translate-y-1/2">
 						<span className="loading loading-spinner loading-sm"></span>
@@ -153,13 +170,12 @@ const ProductSelection: React.FC<IProps> = ({
 			{open && (
 				<ul className="menu menu-sm bg-base-100 w-full mt-2 shadow-lg rounded-box max-h-60 overflow-auto absolute z-50">
 					{loading ? (
-						<li className="text-center py-2">
-							<span className="loading loading-spinner loading-sm"></span>
-							<span className="ml-2">Đang tải sản phẩm...</span>
+						<li className="text-center py-2 pointer-events-none">
+							<span className="ml-2">Đang tải danh mục...</span>
 						</li>
 					) : filteredOptions.length === 0 ? (
 						<li className="text-center py-2 text-base-content/60">
-							Không có sản phẩm theo từ khóa này
+							Không có danh mục theo từ khóa này
 						</li>
 					) : (
 						filteredOptions.map((option) => (
@@ -184,4 +200,4 @@ const ProductSelection: React.FC<IProps> = ({
 	);
 };
 
-export default ProductSelection;
+export default ProductSelector;

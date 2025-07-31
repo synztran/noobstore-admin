@@ -1,6 +1,6 @@
 import CategoryClient from "@/client/CategoryClient";
 import { HTTP_STATUS } from "@/constants";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import toast from "react-hot-toast";
 
 interface SelectProps {
@@ -24,6 +24,7 @@ const CategorySelection: React.FC<SelectProps> = ({
 	isUpdate = false,
 	label,
 }) => {
+	console.log("value", value);
 	const [open, setOpen] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [inputValue, setInputValue] = useState("");
@@ -82,13 +83,15 @@ const CategorySelection: React.FC<SelectProps> = ({
 		setOpen(false);
 	};
 
-	const filteredOptions = categoryOptions.filter((option) =>
-		option.label.toLowerCase().includes(inputValue.toLowerCase())
-	);
+	const filteredOptions = useMemo(() => {
+		return categoryOptions.filter((option) =>
+			option.label.toLowerCase().includes(inputValue.toLowerCase())
+		);
+	}, [categoryOptions, inputValue]);
 
-	const selectedOption = categoryOptions.find(
-		(option) => option.value === value
-	);
+	const selectedOption = useMemo(() => {
+		return categoryOptions.find((option) => option.value === value);
+	}, [categoryOptions, value]);
 
 	useEffect(() => {
 		if (isUpdate) {
@@ -115,7 +118,9 @@ const CategorySelection: React.FC<SelectProps> = ({
 	}, []);
 
 	return (
-		<div className={`form-control w-full ${className}`} ref={dropdownRef}>
+		<div
+			className={`form-control w-full relative ${className}`}
+			ref={dropdownRef}>
 			{label && (
 				<label className="label">
 					<span className="label-text">{label}</span>
@@ -142,7 +147,6 @@ const CategorySelection: React.FC<SelectProps> = ({
 				<ul className="menu menu-sm bg-base-100 w-full mt-2 shadow-lg rounded-box max-h-60 overflow-auto absolute z-50">
 					{loading ? (
 						<li className="text-center py-2">
-							<span className="loading loading-spinner loading-sm"></span>
 							<span className="ml-2">Đang tải danh mục...</span>
 						</li>
 					) : filteredOptions.length === 0 ? (
@@ -161,7 +165,7 @@ const CategorySelection: React.FC<SelectProps> = ({
 											: "hover:bg-base-200"
 									}`}
 									disabled={option.disabled}>
-									{option.label}
+									{option.label} - {option.value}
 								</button>
 							</li>
 						))

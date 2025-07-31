@@ -59,7 +59,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
 	useEffect(() => {
 		const token = Cookies.get(ACCESS_TOKEN);
-		console.log("token", token);
 
 		if (token) {
 			try {
@@ -114,7 +113,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 				resp,
 				null
 			) as IAuthUserInfo | null;
-			console.log("tokenInfo", tokenInfo);
 			if (tokenInfo) {
 				setCookies({ bearerToken: tokenInfo.bearerToken });
 				loadUserFromCookies();

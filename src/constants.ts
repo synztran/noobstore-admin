@@ -26,6 +26,8 @@ const PRODUCT_PREFIX = `${DOMAIN_PREFIX}/product`;
 const ACCOUNT_PREFIX = `${DOMAIN_PREFIX}/account`;
 const UPLOAD_PREFIX = `${DOMAIN_PREFIX}/upload`;
 const USED_PRODUCT_PREFIX = `${DOMAIN_PREFIX}/used-product`;
+const PRODUCT_OPTION_PREFIX = `${DOMAIN_PREFIX}/product-option`;
+const CONFIG_PREFIX = `${DOMAIN_PREFIX}/config`;
 
 export const CATEGORY_API = {
 	ALL_CATEGORY: `${CATEGORY_PREFIX}/get-all`,
@@ -41,13 +43,16 @@ export const PRODUCTS_API = {
 	DETAIL: `${PRODUCT_PREFIX}`, // {product_id}
 	ALL_DETAIL: `${PRODUCT_PREFIX}/all`, // {category_id}
 	PRODUCT_BY_PARAMS: `${PRODUCT_PREFIX}/get-by-params`, // {product_id, option_id}
-	PRODUCT_OPTIONS: `${PRODUCT_PREFIX}/product-options`, // {product_id}
 	DELETE_PRODUCT: `${PRODUCT_PREFIX}/delete`, // {product_id}
-	NEW_PRODUCT_OPTION: `${PRODUCT_PREFIX}/product-option/create`, // {product_id, option_name}
 	NEW_PRODUCT: `${PRODUCT_PREFIX}/create`, // {product_id, option_name}
-	DELETE_PRODUCT_OPTION: `${PRODUCT_PREFIX}/product-option/delete`, // {product_id, option_id}
 	UPDATE_PRODUCT: `${PRODUCT_PREFIX}/update`, // {product_id}
 	ALL_PRODUCTS_BY_CATEGORY: `${PRODUCT_PREFIX}/all-products-by-category`, // {category_id}
+};
+
+export const PRODUCT_OPTIONS_API = {
+	GET: `${PRODUCT_OPTION_PREFIX}/get`, // {product_id, option_name}
+	CREATE: `${PRODUCT_OPTION_PREFIX}/create`, // {product_id, option_name}
+	DELETE: `${PRODUCT_OPTION_PREFIX}/delete`, // {product_id, option_id}
 };
 
 export const ACCOUNT_API = {
@@ -81,7 +86,8 @@ export const PROMOTION_API = {
 };
 
 export const CONFIG_API = {
-	ALL_CONFIG: `${DOMAIN_PREFIX}/config`,
+	GET: `${CONFIG_PREFIX}/get`,
+	ADD_PRODUCT_OPTION: `${CONFIG_PREFIX}/product-option/add`,
 };
 
 export const UPLOAD_API = {
@@ -210,6 +216,18 @@ export const RProductPartType: Record<
 		label: "Full kit",
 		value: EnumProductType.FULL_KIT,
 	},
+	[EnumProductType.LAYOUT]: {
+		label: "Layout",
+		value: EnumProductType.LAYOUT,
+	},
+	[EnumProductType.VERSION]: {
+		label: "Version",
+		value: EnumProductType.VERSION,
+	},
+	[EnumProductType.SIZE]: {
+		label: "Size",
+		value: EnumProductType.SIZE,
+	},
 };
 
 export const productPartOptions = [
@@ -240,6 +258,18 @@ export const productPartOptions = [
 	{
 		label: RProductPartType[EnumProductType.ARTISAN].label,
 		value: EnumProductType.ARTISAN,
+	},
+	{
+		label: RProductPartType[EnumProductType.LAYOUT].label,
+		value: EnumProductType.LAYOUT,
+	},
+	{
+		label: RProductPartType[EnumProductType.VERSION].label,
+		value: EnumProductType.VERSION,
+	},
+	{
+		label: RProductPartType[EnumProductType.SIZE].label,
+		value: EnumProductType.SIZE,
 	},
 	{
 		label: RProductPartType[EnumProductType.ETC].label,

@@ -11,7 +11,7 @@ import { useFormik } from "formik";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { categoryValidationSchema } from "@/validates/categories";
-import { HTTP_STATUS, MapCategoryStatus } from "@/constants";
+import { HTTP_STATUS } from "@/constants";
 import { Link } from "react-router-dom";
 import { Settings, Share2, Trash2 } from "lucide-react";
 import PriceRangeBlock from "@/components/PriceRangeBlock";

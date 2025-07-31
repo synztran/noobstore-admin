@@ -1,10 +1,5 @@
 import { CATEGORY_API } from "@/constants";
-import type {
-	IResponse,
-	ICategory,
-	EnumSaleStatus,
-	EnumCategoryType,
-} from "@/interfaces";
+import type { IResponse, ICategory, EnumSaleStatus } from "@/interfaces";
 import { GET, POST, PUT } from ".";
 
 const getAllCategory = async ({

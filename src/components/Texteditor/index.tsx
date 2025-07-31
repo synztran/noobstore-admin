@@ -48,8 +48,8 @@ const TextEditor: React.FC<IProps> = (props) => {
 					</p>
 				) : null}
 			</div>
-			{/* <Suspense fallback={<div>Loading...</div>}> */}
 			<ReactQuill
+				key={id}
 				id={id}
 				value={value}
 				onChange={(value, _, __, editor) => {
@@ -70,9 +70,6 @@ const TextEditor: React.FC<IProps> = (props) => {
 					],
 				}}
 				onBlur={onBlur ? onBlur : () => {}}
-				// style={{
-				// 	height: `${editorHeight}px`,
-				// }}
 			/>
 
 			<div className="flex justify-between items-center mt-2">
@@ -83,7 +80,6 @@ const TextEditor: React.FC<IProps> = (props) => {
 					{props.errorMessage}
 				</p>
 			)}
-			{/* </Suspense> */}
 		</div>
 	);
 };

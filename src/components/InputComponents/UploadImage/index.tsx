@@ -52,7 +52,7 @@ const UploadImage: React.FC<IUploadImageProps> = ({
 	const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
 	const [transformationOptions, setTransformationOptions] = useState<
 		TransformationOptions[]
-	>([]);
+	>(["isRemoveBackground"]);
 
 	// Reset state when props change (e.g., when modal opens with different product)
 	useEffect(() => {
@@ -203,44 +203,49 @@ const UploadImage: React.FC<IUploadImageProps> = ({
 
 	return (
 		<div className="flex flex-col mt-2 border p-4 relative min-w-[15vw] w-full h-full rounded-[4px] justify-center">
-			<label className="absolute -top-3 left-2 bg-white px-2 text-xs text-[rgba(0,0,0,0.6)]">
-				{label}
-			</label>
-			<button
-				className="btn btn-md max-w-max text-white bg-red-400 rounded-lg p-4 cursor-pointer text-center"
-				onClick={() => fileInputRef.current?.click()}
-				type="button">
-				Tải lên ảnh
-			</button>
-			{acceptedFileTypes?.length ? (
-				<span className="ml-2 text-sm text-gray-500">
-					Định dạng file ảnh{" "}
-					<strong>
-						{acceptedFileTypes
-							.toString()
-							.trim()
-							.replace(/,/g, ", ")}
-					</strong>
-				</span>
-			) : null}
-			<input
-				id="file-upload"
-				type="file"
-				accept={
-					acceptedFileTypes?.join(",") || ".jpg,.jpeg,.png,.gif,.webp"
-				}
-				multiple={allowMultiple}
-				onChange={handleImageUpload}
-				style={{ display: "none" }}
-				ref={fileInputRef}
-			/>
-			<div className="border rounded-md p-4 mt-4 relative">
-				<label className="block mb-2 font-semibold text-sm text-gray-700 absolute -top-3 left-2 bg-white px-2">
-					Tối ưu ảnh
+			<div className="flex gap-2 items-end-safe">
+				<label className="absolute -top-3 left-2 bg-white px-2 text-xs text-[rgba(0,0,0,0.6)]">
+					{label}
 				</label>
-				<div className="flex gap-4">
-					{["isOverlayLogo", "isOptimize", "isRemoveBackground"].map(
-						(option) => (
+				<button
+					className="btn btn-md max-w-max text-white bg-red-400 rounded-lg p-4 cursor-pointer text-center"
+					onClick={() => fileInputRef.current?.click()}
+					type="button">
+					Tải lên ảnh
+				</button>
+				{acceptedFileTypes?.length ? (
+					<span className="ml-2 text-sm text-gray-500">
+						Định dạng file ảnh{" "}
+						<strong>
+							{acceptedFileTypes
+								.toString()
+								.trim()
+								.replace(/,/g, ", ")}
+						</strong>
+					</span>
+				) : null}
+				<input
+					id="file-upload"
+					type="file"
+					accept={
+						acceptedFileTypes?.join(",") ||
+						".jpg,.jpeg,.png,.gif,.webp"
+					}
+					multiple={allowMultiple}
+					onChange={handleImageUpload}
+					style={{ display: "none" }}
+					ref={fileInputRef}
+				/>
+				<div className="border rounded-md p-4 mt-4 relative max-w-max">
+					<label className="block mb-2 font-semibold text-sm text-gray-700 absolute -top-3 left-2 bg-white px-2">
+						Tối ưu ảnh
+					</label>
+					<div className="flex gap-4">
+						{[
+							"isOverlayLogo",
+							"isOptimize",
+							"isRemoveBackground",
+						].map((option) => (
 							<label
 								key={option}
 								className="flex items-center gap-2 cursor-pointer">
@@ -262,17 +267,18 @@ const UploadImage: React.FC<IUploadImageProps> = ({
 										});
 									}}
 								/>
-								<span>
-									{option === "isOverlayLogo" && "Thêm logo"}
-									{option === "isOptimize" && "Tối ưu ảnh"}
+								<span className="text-sm">
+									{option === "isOverlayLogo" && "Logo"}
+									{option === "isOptimize" && "Optimized"}
 									{option === "isRemoveBackground" &&
-										"Xóa nền"}
+										"X background"}
 								</span>
 							</label>
-						)
-					)}
+						))}
+					</div>
 				</div>
 			</div>
+
 			{uploadedImages?.length ? (
 				<BlockImageUploaded
 					uploadedImages={uploadedImages}

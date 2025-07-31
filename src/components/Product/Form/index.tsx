@@ -7,10 +7,9 @@ import MultipleSelectionList, { type TOptions } from "../MultipleSelectList";
 import CategorySelection from "../CategorySelect";
 import SelectionList from "../SelectionList";
 import type { IProduct, IProductOption } from "@/interfaces";
-import ProductsClient from "@/client/ProductsClient";
 import toast from "react-hot-toast";
-import ProductSelection from "../ProductSelect";
 import type { FormikContextType } from "formik";
+import ProductOptionsClient from "@/client/ProductOptionsClient";
 
 interface IProps {
 	formik: FormikContextType<IProduct>;
@@ -21,14 +20,14 @@ interface IProps {
 
 const NewProduct: React.FC<IProps> = (props) => {
 	const { formik, open, onClose, isEdit = false } = props;
-  console.log("formik", formik, formik.values)
+	console.log("formik", formik, formik.values);
 	const [productOptions, setProductOptions] = useState<IProductOption[]>([]);
 	const [isLoading, setLoading] = useState(false);
 
 	useEffect(() => {
 		setLoading(true);
 		(async () => {
-			const res = await ProductsClient.getProductOptions({
+			const res = await ProductOptionsClient.getProductOptions({
 				body: {
 					productId: formik.values.productId || "",
 					productPart: formik.values.productPart,
@@ -56,6 +55,8 @@ const NewProduct: React.FC<IProps> = (props) => {
 		});
 	};
 
+	console.log(formik.errors);
+
 	if (!open) return null;
 
 	return (
@@ -75,7 +76,7 @@ const NewProduct: React.FC<IProps> = (props) => {
 							isUpdate={isEdit}
 							label="Danh mục"
 						/>
-						<ProductSelection
+						{/* <ProductSelection
 							categoryId={formik.values.categoryId}
 							name="productId"
 							value={formik.values.productId || ""}
@@ -83,7 +84,7 @@ const NewProduct: React.FC<IProps> = (props) => {
 							placeholder="Chọn sản phẩm"
 							className="mt-4"
 							label="Sản phẩm"
-						/>
+						/> */}
 						<div className="form-control w-full">
 							<label className="label">
 								<span className="label-text">Tên sản phẩm</span>
@@ -128,12 +129,14 @@ const NewProduct: React.FC<IProps> = (props) => {
 							setFieldValue={formik.setFieldValue}
 							values={formik.values.optionGroups?.optionIds || []}
 							options={
-								(productOptions?.map((option: IProductOption) => ({
-									id: option.id,
-									name: option.name,
-									salePrice: option.salePrice,
-									price: option.price,
-								})) as TOptions[]) || []
+								(productOptions?.map(
+									(option: IProductOption) => ({
+										id: option.id,
+										name: option.name,
+										salePrice: option.salePrice,
+										price: option.price,
+									})
+								) as TOptions[]) || []
 							}
 							fetching={isLoading}
 							disabled={!formik.values.categoryId}
@@ -146,25 +149,25 @@ const NewProduct: React.FC<IProps> = (props) => {
 								</label>
 								<input
 									type="number"
-									id="price"
-									name="price"
+									id="basePrice"
+									name="basePrice"
 									className={`input input-bordered w-full ${
-										formik.touched.price &&
-										formik.errors.price
+										formik.touched.basePrice &&
+										formik.errors.basePrice
 											? "input-error"
 											: ""
 									}`}
-									value={formik.values.price}
+									value={formik.values.basePrice}
 									onChange={formik.handleChange}
 								/>
 								<span className="text-green-600 text-sm mt-1">
-									{formatCurrency(formik.values.price)}
+									{formatCurrency(formik.values.basePrice)}
 								</span>
-								{formik.touched.price &&
-									formik.errors.price && (
+								{formik.touched.basePrice &&
+									formik.errors.basePrice && (
 										<label className="label">
 											<span className="label-text-alt text-error">
-												{formik.errors.price}
+												{formik.errors.basePrice}
 											</span>
 										</label>
 									)}
@@ -206,7 +209,7 @@ const NewProduct: React.FC<IProps> = (props) => {
 
 						<div className="grid grid-cols-3 gap-2">
 							<div className="col-span-1 form-control">
-								<div className="flex flex-col mt-2 border px-2 relative min-w-[15vw] w-full h-[56px] rounded-[4px] justify-center">
+								<div className="flex flex-col mt-2 border px-2 relative w-full h-[56px] rounded-[4px] justify-center">
 									<label className="absolute -top-3 left-2 bg-white px-2 text-xs text-[rgba(0,0,0,0.6)]">
 										<span className="label-text">
 											Trạng thái hiện thị
@@ -232,7 +235,7 @@ const NewProduct: React.FC<IProps> = (props) => {
 								</div>
 							</div>
 							<div className="col-span-1 form-control">
-								<div className="flex flex-col mt-2 border px-2 relative min-w-[15vw] w-full h-[56px] rounded-[4px] justify-center">
+								<div className="flex flex-col mt-2 border px-2 relative w-full h-[56px] rounded-[4px] justify-center">
 									<label className="absolute -top-3 left-2 bg-white px-2 text-xs text-[rgba(0,0,0,0.6)]">
 										<span className="label-text">
 											Nhiều lựa chọn
@@ -258,7 +261,7 @@ const NewProduct: React.FC<IProps> = (props) => {
 								</div>
 							</div>
 							<div className="col-span-1 form-control">
-								<div className="flex flex-col mt-2 border px-2 relative min-w-[15vw] w-full h-[56px] rounded-[4px] justify-center">
+								<div className="flex flex-col mt-2 border px-2 relative w-full h-[56px] rounded-[4px] justify-center">
 									<label className="absolute -top-3 left-2 bg-white px-2 text-xs text-[rgba(0,0,0,0.6)]">
 										<span className="label-text">
 											Bắt buộc
@@ -287,12 +290,13 @@ const NewProduct: React.FC<IProps> = (props) => {
 						<TextEditor
 							label="Nội dung chi tiết"
 							value={formik.values.description ?? ""}
-							  onChange={(value: string) =>
+							onChange={(value: string) =>
 								formik.setFieldValue("description", value)
 							}
 							placeholder="Nội dung chi tiết"
 							className="mt-4"
 							maxContent={500}
+							errorMessage={formik.errors.description}
 						/>
 						<UploadImage
 							label="Ảnh sản phẩm đại diện"

@@ -1,4 +1,5 @@
 import { getData, isValid } from "@/client";
+import ProductOptionsClient from "@/client/ProductOptionsClient";
 import ProductsClient from "@/client/ProductsClient";
 import NewProduct from "@/components/Product/Form";
 import { HTTP_STATUS } from "@/constants";
@@ -20,10 +21,10 @@ const tableColumns: {
 	label: string;
 	styles?: React.CSSProperties;
 }[] = [
-  {
-    id: "thumbnail",
-    label: "Ảnh",
-  },
+	{
+		id: "thumbnail",
+		label: "Ảnh",
+	},
 	{
 		id: "categoryId",
 		label: "#",
@@ -62,19 +63,20 @@ const Products: React.FC = () => {
 			setLoading(true);
 			const signal = new AbortController().signal;
 			const response = await ProductsClient.getAllProducts({ signal });
-			console.log("response", response)
+			console.log("response", response);
 			if (!isValid(response)) {
 				toast.error("Có lỗi xảy ra trong quá trình lấy dữ liệu");
 				return;
 			}
-			const respProductOptions = await ProductsClient.getProductOptions({
-				body: {
-					productId: "",
-					productPart: EnumProductType.ETC,
-					productOptionIds: [],
-				},
-				signal,
-			});
+			const respProductOptions =
+				await ProductOptionsClient.getProductOptions({
+					body: {
+						productId: "",
+						productPart: EnumProductType.ETC,
+						productOptionIds: [],
+					},
+					signal,
+				});
 			if (!isValid(respProductOptions)) {
 				toast.error("Có lỗi xảy ra trong quá trình lấy dữ liệu");
 				return;
@@ -86,8 +88,6 @@ const Products: React.FC = () => {
 		})();
 	}, []);
 
-  console.log("targetProduct", targetProduct)
-
 	const formik = useFormik({
 		initialValues: {
 			productId: targetProduct?.productId ?? "",
@@ -96,7 +96,7 @@ const Products: React.FC = () => {
 			slug: targetProduct?.slug ?? "",
 			productPart: targetProduct?.productPart ?? EnumProductType.ETC,
 			isActive: targetProduct?.isActive ?? false,
-			price: targetProduct?.price ?? 0,
+			basePrice: targetProduct?.basePrice ?? 0,
 			salePrice: targetProduct?.salePrice ?? 0,
 			thumbnail: targetProduct?.thumbnail ?? null,
 			images: targetProduct?.images ?? [],
@@ -210,16 +210,20 @@ const Products: React.FC = () => {
 								) : null}
 								{products.map((product) => (
 									<tr key={product.productId}>
-                    <td>
-                      <div className="flex flex-col gap-2">
-                        <img
-                          src={product.thumbnail?.path || NEW_MISSING_IMAGE}
-                          alt={product.productName}
-                          width={100}
-                          height={100}
-                        />
-                      </div>
-                    </td>
+										<td>
+											<div className="flex flex-col gap-2">
+												<img
+													src={
+														product.thumbnail
+															?.path ||
+														NEW_MISSING_IMAGE
+													}
+													alt={product.productName}
+													width={100}
+													height={100}
+												/>
+											</div>
+										</td>
 										<td>
 											<div className="flex flex-col gap-2">
 												<div>
@@ -228,8 +232,7 @@ const Products: React.FC = () => {
 													</span>{" "}
 													{product.productId}
 												</div>
-												{product?.productPart
-													 ? (
+												{product?.productPart ? (
 													<div>
 														<span className="font-bold">
 															Product part:

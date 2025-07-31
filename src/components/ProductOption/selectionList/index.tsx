@@ -1,12 +1,13 @@
-import React from "react";
+import React, { useMemo } from "react";
 
 interface SelectProps {
 	options: { value: string; label: string; disabled?: boolean }[];
 	name: string;
 	value: string;
-	onChange: (name: string, value: string) => void;
+	onChange?: (name: string, value: string) => void;
 	placeholder?: string;
 	className?: string;
+	disabled?: boolean;
 }
 
 const SelectionList: React.FC<SelectProps> = ({
@@ -16,6 +17,7 @@ const SelectionList: React.FC<SelectProps> = ({
 	placeholder,
 	className,
 	name,
+	disabled = false,
 }) => {
 	const [open, setOpen] = React.useState(false);
 	const [loading, setLoading] = React.useState(false);
@@ -43,49 +45,71 @@ const SelectionList: React.FC<SelectProps> = ({
 		setOpen(false);
 	};
 
-	const selectedOption = selectOptions.find((option) => option?.value === value);
+	const selectedOption = useMemo(() => {
+		return selectOptions.find((option) => option?.value === value);
+	}, [selectOptions, value]);
 
 	return (
-		<div className={`dropdown ${open ? 'dropdown-open' : ''} ${className || ''}`}>
+		<div
+			className={`dropdown w-full ${open ? "dropdown-open" : ""} ${
+				className || ""
+			} ${disabled ? "pointer-events-none" : ""}`}>
 			<div className="form-control w-full">
 				<label className="label">
-					<span className="label-text">{placeholder || "Select"}</span>
+					<span className="label-text">
+						{placeholder || "Select"}
+					</span>
 				</label>
 				<div
 					className="input input-bordered w-full cursor-pointer flex items-center justify-between"
-					onClick={() => setOpen(!open)}
-				>
-					<span className={selectedOption ? '' : 'text-gray-400'}>
-						{selectedOption ? selectedOption.label : placeholder || "Select"}
+					onClick={() => setOpen(!open)}>
+					<span className={selectedOption ? "" : "text-gray-400"}>
+						{selectedOption
+							? selectedOption.label
+							: placeholder || "Select"}
 					</span>
 					<div className="flex items-center gap-2">
 						{loading && (
 							<div className="loading loading-spinner loading-sm"></div>
 						)}
-						<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+						<svg
+							className="w-4 h-4"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24">
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth={2}
+								d="M19 9l-7 7-7-7"
+							/>
 						</svg>
 					</div>
 				</div>
 			</div>
 
-			{open && (
+			{open && !disabled && (
 				<ul className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-full max-h-60 overflow-y-auto z-50">
 					{selectOptions.length > 0 ? (
 						selectOptions.map((option) => (
 							<li key={option.value}>
 								<button
 									className={`w-full text-left px-4 py-2 hover:bg-base-200 ${
-										option.disabled ? 'opacity-50 cursor-not-allowed' : ''
-									} ${option.value === value ? 'bg-base-200' : ''}`}
+										option.disabled
+											? "opacity-50 cursor-not-allowed"
+											: ""
+									} ${
+										option.value === value
+											? "bg-base-200"
+											: ""
+									}`}
 									onClick={() => {
 										if (!option.disabled) {
-											onChange(name, option.value);
+											onChange?.(name, option.value);
 											setOpen(false);
 										}
 									}}
-									disabled={option.disabled}
-								>
+									disabled={option.disabled}>
 									{option.label}
 								</button>
 							</li>

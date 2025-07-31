@@ -116,7 +116,7 @@ const MultipleSelectionList: React.FC<IProps> = ({
 											)
 										</span>
 										<X
-											className="w-3 h-3 cursor-pointer"
+											className="w-4 h-4 cursor-pointer text-red-400"
 											onClick={() => {
 												if (option.id)
 													handleRemoveOption(
@@ -143,38 +143,36 @@ const MultipleSelectionList: React.FC<IProps> = ({
 						</>
 					)}
 				</div>
-				{isOpen && filteredOptions.length > 0 && (
+				{isOpen && (
 					<ul className="menu menu-sm bg-base-100 w-full shadow-lg rounded-box overflow-auto absolute z-50 top-full mt-1">
-						{filteredOptions.map((option) => (
-							<li key={option.id}>
-								<button
-									type="button"
-									onMouseDown={() =>
-										handleSelectOption(option)
-									}
-									className="flex items-center justify-between hover:bg-base-200">
-									<span>
-										{option.name} - {option.id} (+
-										{formatCurrency(
-											option.salePrice ||
-												option.price ||
-												0
-										)}
-										)
-									</span>
-									<svg
-										className="w-4 h-4"
-										fill="currentColor"
-										viewBox="0 0 20 20">
-										<path
-											fillRule="evenodd"
-											d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-											clipRule="evenodd"
-										/>
-									</svg>
-								</button>
+						{filteredOptions.length > 0 ? (
+							filteredOptions.map((option) => (
+								<li key={option.id}>
+									<button
+										type="button"
+										onMouseDown={() =>
+											handleSelectOption(option)
+										}
+										className="flex items-center justify-between hover:bg-base-200">
+										<span className="text-base">
+											{option.name} - {option.id} (+
+											{formatCurrency(
+												option.salePrice ||
+													option.price ||
+													0
+											)}
+											)
+										</span>
+									</button>
+								</li>
+							))
+						) : (
+							<li>
+								<span className="text-sm text-base-content/60">
+									Không có option nào
+								</span>
 							</li>
-						))}
+						)}
 					</ul>
 				)}
 			</div>

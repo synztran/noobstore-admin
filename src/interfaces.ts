@@ -15,6 +15,9 @@ export enum EnumProductType {
 	SWITCH = "SWITCH",
 	ARTISAN = "ARTISAN",
 	FULL_KIT = "FULL_KIT",
+	LAYOUT = "LAYOUT",
+	VERSION = "VERSION",
+	SIZE = "SIZE",
 	ETC = "",
 }
 
@@ -240,7 +243,7 @@ export interface IProduct {
 	slug: string;
 	productPart: EnumProductType;
 	status: EnumSaleStatus;
-	price: number;
+	basePrice: number;
 	salePrice: number;
 	thumbnail: {
 		path: string;
@@ -257,6 +260,7 @@ export interface IProduct {
 	isRequired?: boolean;
 	isMultiple?: boolean;
 	productOpts?: IProductOption[];
+	categoryName?: string;
 }
 
 export interface IOptionGroup {
@@ -274,24 +278,34 @@ export interface IProductOption {
 	description?: string;
 	status?: EnumProductOptStatus; // Assuming ENUM_STATUS maps to EnumProductOptStatus
 	quantity?: number;
-	thumbnail?: string;
+	thumbnail?: {
+		path: string;
+		alt: string;
+	};
 	isActive?: boolean;
 	createdAt?: Date;
 	updatedAt?: Date | null;
 	productPart?: EnumProductType;
+	productId?: string;
 }
 
-export interface IProductOption {
-	id?: string; // Assuming PyObjectId is a string representation
-	name?: string;
-	price?: number;
-	salePrice?: number;
-	description?: string;
-	status?: EnumProductOptStatus; // Assuming ENUM_STATUS maps to EnumProductOptStatus
-	quantity?: number;
-	thumbnail?: string;
-	isActive?: boolean;
-	createdAt?: Date;
-	updatedAt?: Date | null;
-	productPart?: EnumProductType;
+export interface IConfig {
+	shippingRate?: {
+		fastDelivery: number;
+		standardDelivery: number;
+	};
+	configProductOptions?: IConfigProductOption[];
+}
+
+// export interface IConfigProductOptionsWrapper {
+// 	configProductOptions: IConfigProductOption;
+// }
+
+export interface IConfigProductOption {
+	id?: string;
+	name: string;
+	description: string;
+	createdAt: Date;
+	updatedAt?: Date;
+	isActive: boolean;
 }
