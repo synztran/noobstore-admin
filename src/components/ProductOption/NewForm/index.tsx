@@ -16,9 +16,9 @@ import ProductSelector from "../ProductSelector";
 import SelectionList from "../selectionList";
 import ProductOptionsClient from "@/client/ProductOptionsClient";
 import { X } from "lucide-react";
-import { type IOptionSelection } from "@/components/InputComponents/SelectWithAdd";
+// import { type IOptionSelection } from "@/components/InputComponents/SelectWithAdd";
 import OptionSelector from "../OptionSelector";
-import ConfigClient from "@/client/ConfigClient";
+// import ConfigClient from "@/client/ConfigClient";
 
 interface IProps {
 	open: boolean;
@@ -117,13 +117,13 @@ const NewProductOption: React.FC<IProps> = (props) => {
 		},
 	});
 
-	const handleOnChange = (idx: number, name: string, value: any) => {
+	const handleOnChange = (idx: number, name: string, value: unknown) => {
 		const updated = [...formik.values.options];
 		updated[idx] = { ...updated[idx], [name]: value };
 		formik.setFieldValue("options", updated);
 	};
 
-	const handleOnChangeProductParent = (name: string, value: any) => {
+	const handleOnChangeProductParent = (name: string, value: unknown) => {
 		formik.setFieldValue(name, value);
 	};
 
@@ -137,35 +137,36 @@ const NewProductOption: React.FC<IProps> = (props) => {
 		});
 	};
 
-	const handleUpdateConfig = async (
-		payload: Omit<IConfigProductOption, "createdAt" | "updatedAt" | "id">[]
-	) => {
-		try {
-			const resp = await ConfigClient.addProductOption({
-				body: {
-					productOptions: formik.values.options.map((option) => ({
-						name: option.name || "",
-						description: option.description || "",
-						isActive: option.isActive || false,
-						createdAt: option.createdAt || new Date(),
-						productPart: formik.values.productPart,
-					})),
-					updatedAt: new Date(),
-					productId: formik.values.productId || "",
-					productPart:
-						formik.values.productPart || EnumProductType.ETC,
-				},
-			});
-			if (resp.status !== HTTP_STATUS.Ok) {
-				toast.error(resp.message);
-			} else {
-				toast.success("Cập nhật thành công");
-				setPendingCreateOptions([]);
-			}
-		} catch (error) {
-			toast.error("Có lỗi xảy ra trong quá trình cập nhật");
-		}
-	};
+	// const handleUpdateConfig = async (
+	// 	payload: Omit<IConfigProductOption, "createdAt" | "updatedAt" | "id">[]
+	// ) => {
+	// 	try {
+	// 		const resp = await ConfigClient.addProductOption({
+	// 			body: {
+	// 				productOptions: payload.map((option) => ({
+	// 					name: option.name || "",
+	// 					description: option.description || "",
+	// 					isActive: option.isActive || false,
+	// 					createdAt: new Date(),
+	// 					productPart: formik.values.productPart,
+	// 				})),
+	// 				updatedAt: new Date(),
+	// 				productId: formik.values.productId || "",
+	// 				productPart:
+	// 					formik.values.productPart || EnumProductType.ETC,
+	// 			},
+	// 		});
+	// 		if (resp.status !== HTTP_STATUS.Ok) {
+	// 			toast.error(resp.message);
+	// 		} else {
+	// 			toast.success("Cập nhật thành công");
+	// 			setPendingCreateOptions([]);
+	// 		}
+	// 	} catch (error: unknown) {
+	// 		console.error(error);
+	// 		toast.error("Có lỗi xảy ra trong quá trình cập nhật");
+	// 	}
+	// };
 
 	const handleSubmit = async (payload: {
 		options: IProductOption[];
@@ -174,31 +175,39 @@ const NewProductOption: React.FC<IProps> = (props) => {
 	}) => {
 		const signal = new AbortController().signal;
 		let success = true;
+    let resp
 		for (const values of payload.options) {
-			const resp = await ProductOptionsClient.postNewProductOption({
-				body: {
-					...values,
-					productId: payload.productId,
-					productPart: payload.productPart,
-					thumbnail: values.thumbnail ?? {
-						path: "",
-						alt: "",
-					},
-				},
-				signal,
-			});
+			if (isEdit) {
+				resp = await ProductOptionsClient.putUpdateProductOption({
+					body: values,
+					signal,
+				});
+			} else {
+				resp = await ProductOptionsClient.postNewProductOption({
+          body: {
+            ...values,
+            productId: payload.productId,
+            productPart: payload.productPart,
+            thumbnail: values.thumbnail ?? {
+              path: "",
+              alt: "",
+            },
+          },
+          signal,
+        });
+			}
 			if (resp.status !== HTTP_STATUS.Ok) {
 				success = false;
 			}
 		}
 		if (success) {
-			toast.success("Tạo mới thành công");
+			toast.success(isEdit ? "Cập nhật thành công" : "Tạo mới thành công");
 			formik.resetForm();
 			onClose();
 			onSuccess();
-			handleUpdateConfig(pendingCreateOptions);
+			// handleUpdateConfig(pendingCreateOptions);
 		} else {
-			toast.error("Có lỗi xảy ra trong quá trình tạo mới");
+			toast.error(isEdit ? "Có lỗi xảy ra trong quá trình cập nhật" : "Có lỗi xảy ra trong quá trình tạo mới");
 		}
 	};
 
@@ -217,29 +226,29 @@ const NewProductOption: React.FC<IProps> = (props) => {
 		);
 	};
 
-	const handleSelect = ({
-		name = "",
-		option,
-	}: {
-		name: string;
-		option: IOptionSelection | null;
-	}) => {
-		console.log(name, option);
-		if (!name) return;
-		// setSelected({ ...selected, [name]: option });
-	};
+	// const handleSelect = ({
+	// 	name = "",
+	// 	option,
+	// }: {
+	// 	name: string;
+	// 	option: IOptionSelection | null;
+	// }) => {
+	// 	console.log(name, option);
+	// 	if (!name) return;
+	// 	// setSelected({ ...selected, [name]: option });
+	// };
 
-	const handleAddNew = ({
-		name = "",
-		newOption,
-	}: {
-		name: string;
-		newOption: IOptionSelection;
-	}) => {
-		console.log(name, newOption);
-		// setOptions({ ...options, [name]: [...options[name], newOption] });
-		// setSelected({ ...selected, [name]: newOption });
-	};
+	// const handleAddNew = ({
+	// 	name = "",
+	// 	newOption,
+	// }: {
+	// 	name: string;
+	// 	newOption: IOptionSelection;
+	// }) => {
+	// 	console.log(name, newOption);
+	// 	// setOptions({ ...options, [name]: [...options[name], newOption] });
+	// 	// setSelected({ ...selected, [name]: newOption });
+	// };
 
 	console.log(formik.values, pendingCreateOptions);
 
@@ -248,7 +257,7 @@ const NewProductOption: React.FC<IProps> = (props) => {
 			<div className="modal-box max-w-[min(80vw,850px)] max-h-[80vh] overflow-y-auto !p-0">
 				<div className="sticky top-0 z-10 bg-white p-4">
 					<h3 className="font-bold text-2xl mb-4">
-						Tạo mới Product Option
+						{isEdit ? "Cập nhật" : "Tạo mới"} Product Option
 					</h3>
 					<div className="grid grid-cols-6 gap-2 sticky top-0 z-10 bg-white">
 						<SelectionList
@@ -332,7 +341,9 @@ const NewProductOption: React.FC<IProps> = (props) => {
 																formik.errors
 																	.options[
 																	idx
-																] as any
+																] as unknown as {
+																	name: string;
+																}
 															)?.name
 														}
 													</span>
@@ -395,7 +406,9 @@ const NewProductOption: React.FC<IProps> = (props) => {
 																		.errors
 																		.options[
 																		idx
-																	] as any
+																	] as unknown as {
+																		quantity: string;
+																	}
 																)?.quantity
 															}
 														</span>
@@ -461,7 +474,9 @@ const NewProductOption: React.FC<IProps> = (props) => {
 																		.errors
 																		.options[
 																		idx
-																	] as any
+																	] as unknown as {
+																		price: string;
+																	}
 																)?.price
 															}
 														</span>
@@ -527,7 +542,9 @@ const NewProductOption: React.FC<IProps> = (props) => {
 																		.errors
 																		.options[
 																		idx
-																	] as any
+																	] as unknown as {
+																		salePrice: string;
+																	}
 																)?.salePrice
 															}
 														</span>
@@ -630,16 +647,13 @@ const NewProductOption: React.FC<IProps> = (props) => {
 									onClick={() => {
 										onClose();
 										formik.resetForm();
-										// formik.setFieldValue("options", [
-										// 	getDefaultOption(),
-										// ]);
 									}}>
 									Cancel
 								</button>
 								<button
 									type="submit"
 									className="btn btn-primary">
-									Create
+									{isEdit ? "Cập nhật" : "Tạo mới"}
 								</button>
 							</div>
 						</div>

@@ -35,6 +35,7 @@ const NewProduct: React.FC<IProps> = (props) => {
 				},
 				signal: new AbortController().signal,
 			});
+      console.log("res", res)
 			if (res.status === HTTP_STATUS.Ok) {
 				setProductOptions(res.data || []);
 			} else {
@@ -56,7 +57,7 @@ const NewProduct: React.FC<IProps> = (props) => {
 	};
 
 	console.log(formik.errors);
-
+  console.log("productOptions", productOptions)
 	if (!open) return null;
 
 	return (
@@ -131,7 +132,7 @@ const NewProduct: React.FC<IProps> = (props) => {
 							options={
 								(productOptions?.map(
 									(option: IProductOption) => ({
-										id: option.id,
+										id: option.productOptionId,
 										name: option.name,
 										salePrice: option.salePrice,
 										price: option.price,

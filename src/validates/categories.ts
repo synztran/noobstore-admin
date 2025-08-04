@@ -25,10 +25,10 @@ export const productValidationSchema = yup.object({
 	productName: yup.string().required("Product name is required"),
 	isActive: yup.boolean().required("Active status is required"),
 	description: yup.string().required("description is required"),
-	price: yup
+	basePrice: yup
 		.number()
-		.required("price is required")
-		.min(0, "price must be greater than or equal to 0"),
+		.required("Base price is required")
+		.min(0, "Base price must be greater than or equal to 0"),
 	salePrice: yup
 		.number()
 		.typeError("Giá khuyến mãi phải là số")
@@ -36,19 +36,19 @@ export const productValidationSchema = yup.object({
 			"is-less-than-price",
 			"Giá khuyến mãi không được lớn hơn giá bán",
 			function (value) {
-				return value === undefined || value <= this.parent.price;
+				return value === undefined || value <= this.parent.basePrice;
 			}
 		),
 	productPart: yup
 		.string()
 		.required("Product part is required")
 		.oneOf(Object.values(EnumProductType), "Invalid product part"),
-	thumbnail: yup.object({
-		// path: yup.string().required("Thumbnail path is required"),
-		// size: yup
-		// 	.number()
-		// 	.required("Thumbnail size is required")
-		// 	.min(1, "Thumbnail size must be greater than 0"),
-	}),
+	// thumbnail: yup.object({
+	// path: yup.string().required("Thumbnail path is required"),
+	// size: yup
+	// 	.number()
+	// 	.required("Thumbnail size is required")
+	// 	.min(1, "Thumbnail size must be greater than 0"),
+	// }),
 	quantity: yup.number().required("Quantity is required"),
 });

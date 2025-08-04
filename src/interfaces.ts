@@ -135,13 +135,13 @@ export interface IResponse<T> {
 
 export interface IRequest {
 	url: string;
-	params?: any;
+	params?: unknown;
 	method?: string;
-	body?: any;
+	body?: unknown;
 	mock?: boolean;
 	page?: boolean;
 	isAuth?: boolean;
-	ctx?: any;
+	ctx?: unknown;
 	isBasic?: boolean;
 	debug?: boolean;
 	cache?: boolean;
@@ -271,7 +271,7 @@ export interface IOptionGroup {
 }
 
 export interface IProductOption {
-	id?: string; // Assuming PyObjectId is a string representation
+	// id?: string; // Assuming PyObjectId is a string representation
 	name?: string;
 	price?: number;
 	salePrice?: number;
@@ -287,6 +287,7 @@ export interface IProductOption {
 	updatedAt?: Date | null;
 	productPart?: EnumProductType;
 	productId?: string;
+	productOptionId?: string;
 }
 
 export interface IConfig {

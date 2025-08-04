@@ -3,7 +3,6 @@ import type {
 	IResponse,
 	IConfigProductOption,
 	IConfig,
-	IProductOption,
 	EnumProductType,
 } from "@/interfaces";
 import { GET, POST } from ".";
@@ -13,7 +12,7 @@ const getAllConfig = async ({
 	signal,
 	isAuth = true,
 }: {
-	ctx?: any;
+	ctx?: unknown;
 	signal?: AbortSignal;
 	isAuth?: boolean;
 }): Promise<IResponse<IConfig>> => {
@@ -27,7 +26,7 @@ const addProductOption = async ({
 	signal,
 	isAuth = true,
 }: {
-	ctx?: any;
+	ctx?: unknown;
 	body?: {
 		productOptions: IConfigProductOption[];
 		updatedAt: Date;

@@ -1,7 +1,7 @@
 import ProductOptionsClient from "@/client/ProductOptionsClient";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import NewProductOption from "@/components/ProductOption/NewForm";
-import MultiNewProductOption from "@/components/ProductOption/NewForm/MultiNewProductOption";
+// import MultiNewProductOption from "@/components/ProductOption/NewForm/MultiNewProductOption";
 import { HTTP_STATUS, ProductOptStatus } from "@/constants";
 import { NEW_MISSING_IMAGE } from "@/images";
 import {
@@ -119,7 +119,7 @@ export default function ProductOptionsPage() {
 							</tr>
 						) : null}
 						{productOptions?.map((product) => (
-							<tr key={product?.id}>
+							<tr key={product?.productOptionId}>
 								<td>
 									<div className="flex flex-col gap-2">
 										<img
@@ -138,7 +138,7 @@ export default function ProductOptionsPage() {
 											<span className="font-bold">
 												ID:
 											</span>{" "}
-											{product?.id}
+											{product?.productOptionId}
 										</div>
 										<div>
 											<span className="font-bold">
@@ -248,7 +248,7 @@ export default function ProductOptionsPage() {
 											className="btn btn-ghost btn-sm p-0 min-w-5"
 											onClick={() =>
 												handleDeleteProduct(
-													product?.id as string
+													product?.productOptionId as string
 												)
 											}>
 											<Trash2 className="!w-5 !h-5 text-red-400" />

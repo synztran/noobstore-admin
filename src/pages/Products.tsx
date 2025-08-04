@@ -175,6 +175,8 @@ const Products: React.FC = () => {
 		setOpen(true);
 	};
 
+  console.log(products)
+
 	return (
 		<div className="space-y-6">
 			<div className="flex justify-between items-center">
@@ -267,7 +269,7 @@ const Products: React.FC = () => {
 																		(
 																			option
 																		) =>
-																			option.id ===
+																			option.productOptionId ===
 																			item
 																	)?.name
 																}
@@ -301,8 +303,8 @@ const Products: React.FC = () => {
 														<span className="font-bold">
 															Required:
 														</span>{" "}
-														{product.optionGroups
-															.isRequired ? (
+														{product.isRequired
+															 ? (
 															<Check className="text-green-500 w-5 h-5" />
 														) : (
 															<Ban className="text-red-500 w-5 h-5" />

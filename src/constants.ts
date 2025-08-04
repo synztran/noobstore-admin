@@ -53,6 +53,7 @@ export const PRODUCT_OPTIONS_API = {
 	GET: `${PRODUCT_OPTION_PREFIX}/get`, // {product_id, option_name}
 	CREATE: `${PRODUCT_OPTION_PREFIX}/create`, // {product_id, option_name}
 	DELETE: `${PRODUCT_OPTION_PREFIX}/delete`, // {product_id, option_id}
+	UPDATE: `${PRODUCT_OPTION_PREFIX}/update`, // {product_id, option_id}
 };
 
 export const ACCOUNT_API = {

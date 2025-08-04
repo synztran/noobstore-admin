@@ -1,7 +1,7 @@
-import { PRODUCT_OPTIONS_API, PRODUCTS_API } from "@/constants";
+import { PRODUCT_OPTIONS_API } from "@/constants";
 import type { IResponse, IProductOption } from "@/interfaces";
 import { EnumProductType } from "@/interfaces";
-import { POST } from ".";
+import { POST, PUT } from ".";
 
 const getProductOptions = async ({
 	body,
@@ -42,8 +42,20 @@ const postNewProductOption = async ({
 	return POST({ url, body, isAuth: true, signal });
 };
 
+const putUpdateProductOption = async ({
+	body,
+	signal,
+}: {
+	body: IProductOption;
+	signal: AbortSignal;
+}) => {
+	const url = PRODUCT_OPTIONS_API.UPDATE;
+	return PUT({ url, body, isAuth: true, signal });
+};
+
 export default {
 	getProductOptions,
 	postDeleteProductOption,
 	postNewProductOption,
+	putUpdateProductOption,
 };
